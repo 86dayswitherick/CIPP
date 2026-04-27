@@ -1,1 +1,33 @@
+name: CIPP Auto Sync + Deploy
+
+on:
+  schedule:
+    - cron: '0 6 * * *' # Runs daily at 6 AM UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Sync fork with upstream CIPP
+        uses: aormsby/Fork-Sync-With-Upstream-action@v3.4
+        with:
+          upstream_sync_repo: KelvinTegelaar/CIPP
+          upstream_sync_branch: main
+          target_sync_branch: main
+          target_repo_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Trigger deployment check
+        run: |
+          echo "Fork sync completed successfully."
+          echo "GitHub Actions deployment workflows should trigger automatically if changes are detected."
 
